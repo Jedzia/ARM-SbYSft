@@ -22,6 +22,7 @@
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/usb/usbd.h>
 #include <libopencm3/usb/cdc.h>
+#include "io_config.h"
 
 static const struct usb_device_descriptor dev = {
 	.bLength = USB_DT_DEVICE_SIZE,
@@ -232,6 +233,8 @@ static void cdcacm_set_config(usbd_device *usbd_dev, uint16_t wValue)
 				cdcacm_control_request);
 }
 
+extern void HAL_SETUP();
+
 int main(void)
 {
 	int i;
@@ -252,22 +255,31 @@ int main(void)
 	rcc_clock_setup_in_hsi_out_48mhz();
 
 	rcc_periph_clock_enable(RCC_GPIOC);
-
-	gpio_set(GPIOC, GPIO11);
-	gpio_set_mode(GPIOC, GPIO_MODE_OUTPUT_2_MHZ,
-		      GPIO_CNF_OUTPUT_PUSHPULL, GPIO11);
-
-	usbd_dev = usbd_init(&st_usbfs_v1_usb_driver, &dev, &config, usb_strings, 3, usbd_control_buffer, sizeof(usbd_control_buffer));
+	//rcc_periph_clock_enable(RCC_GPIOA);
+	
+	HAL_SETUP();
 
 	//_usbd_reset(&usbd_dev);
+	for (i = 0; i < 0x80000; i++)
+		__asm__("nop");
+	gpio_set_mode(USB_DISC_GPIO_Port, GPIO_MODE_OUTPUT_2_MHZ,
+		      GPIO_CNF_OUTPUT_PUSHPULL, USB_DISC_Pin);
+	gpio_set(USB_DISC_GPIO_Port, USB_DISC_Pin);
+	for (i = 0; i < 0x80000; i++)
+		__asm__("nop");
+
+
+	usbd_dev = usbd_init(&st_usbfs_v1_usb_driver, &dev, &config, usb_strings, 3, usbd_control_buffer, sizeof(usbd_control_buffer));
 
 	usbd_register_set_config_callback(usbd_dev, cdcacm_set_config);
 
 	for (i = 0; i < 0x800000; i++)
 		__asm__("nop");
-	gpio_clear(GPIOC, GPIO11);
+	gpio_clear(USB_DISC_GPIO_Port, USB_DISC_Pin);
 
 	
 	while (1)
+	{
 		usbd_poll(usbd_dev);
+	}
 }

@@ -46,6 +46,8 @@ OPT		:= -Os
 DEBUG		:= -ggdb3
 CSTD		?= -std=c99
 
+UPLOADER = /E/Projects/Elektronik/ARM/openblt_v010700/Host/BootCommander
+
 
 ###############################################################################
 # Source files
@@ -270,6 +272,9 @@ else
 		   -x $(EXAMPLES_SCRIPT_DIR)/black_magic_probe_flash.scr \
 		   $(*).elf
 endif
+
+upload: $(BINARY).srec
+	$(UPLOADER) -s=xcp -t=xcp_usb $(BINARY).srec
 
 .PHONY: images clean stylecheck styleclean elf bin hex srec list
 

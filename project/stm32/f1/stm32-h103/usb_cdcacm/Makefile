@@ -17,10 +17,16 @@
 ## along with this library.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+OBJS = init.o
+
 BINARY = cdcacm
+
 
 #LDSCRIPT = ../stm32-h103.orig.ld
 LDSCRIPT = ../stm32-h103.ld
+
+#upload: $(BUILD_DIR)/$(TARGET).srec
+#	$(UPLOADER) -s=xcp -t=xcp_usb $(BUILD_DIR)/$(TARGET).srec
 
 include ../../Makefile.include
 
