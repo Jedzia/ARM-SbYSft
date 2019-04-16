@@ -133,6 +133,7 @@ all: $(BIN_PATH)/$(PROJ_NAME).srec
 $(BIN_PATH)/$(PROJ_NAME).srec : $(BIN_PATH)/$(PROJ_NAME).elf
 	@$(OC) $< $(OFLAGS) $@
 	@$(OD) $(ODFLAGS) $< > $(BIN_PATH)/$(PROJ_NAME).map
+	@$(OD) -S $< > $(BIN_PATH)/$(PROJ_NAME).S
 	@echo +++ Summary of memory consumption:
 	@$(SZ) $(SZFLAGS) $<
 	@echo +++ Build complete [$(notdir $@)]

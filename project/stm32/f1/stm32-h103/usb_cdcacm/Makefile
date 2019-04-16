@@ -19,6 +19,12 @@
 
 OBJS = init.o
 
+#DEFS		+= -I$(OPENCM3_DIR)/include
+DEFS		+= -I../../../../../OpenBLT/Target/ARMCM3_STM32F1_Olimex_STM32H103_GCC/Boot/lib/STM32F1xx_HAL_Driver/Inc
+DEFS		+= -I../../../../../OpenBLT/Target/ARMCM3_STM32F1_Olimex_STM32H103_GCC/Boot/lib/CMSIS/Include
+DEFS		+= -I../../../../../OpenBLT/Target/ARMCM3_STM32F1_Olimex_STM32H103_GCC/Example_Prog/lib/CMSIS/Device/ST/STM32F1xx/Include
+DEFS 		+= -DSTM32F103xB
+
 BINARY = cdcacm
 
 

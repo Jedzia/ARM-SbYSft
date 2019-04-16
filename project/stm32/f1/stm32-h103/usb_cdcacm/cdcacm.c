@@ -251,22 +251,27 @@ int main(void)
   /* initialize the led driver */
 //  LedInit();
 
+	// 800234e is Init()
+	//typedef void Init(void);
+    //Init* f = (Init*)0x800234c;
+	//f();
 	
-	rcc_clock_setup_in_hsi_out_48mhz();
+	//rcc_clock_setup_in_hsi_out_48mhz();
 
 	rcc_periph_clock_enable(RCC_GPIOC);
+	//rcc_periph_clock_enable(RCC_GPIOD);
 	//rcc_periph_clock_enable(RCC_GPIOA);
 	
-	HAL_SETUP();
+	//HAL_SETUP();
 
 	//_usbd_reset(&usbd_dev);
-	for (i = 0; i < 0x80000; i++)
+	for (i = 0; i < 0x800000; i++)
 		__asm__("nop");
 	gpio_set_mode(USB_DISC_GPIO_Port, GPIO_MODE_OUTPUT_2_MHZ,
 		      GPIO_CNF_OUTPUT_PUSHPULL, USB_DISC_Pin);
 	gpio_set(USB_DISC_GPIO_Port, USB_DISC_Pin);
-	for (i = 0; i < 0x80000; i++)
-		__asm__("nop");
+	//for (i = 0; i < 0x80000; i++)
+	//	__asm__("nop");
 
 
 	usbd_dev = usbd_init(&st_usbfs_v1_usb_driver, &dev, &config, usb_strings, 3, usbd_control_buffer, sizeof(usbd_control_buffer));
@@ -277,9 +282,10 @@ int main(void)
 		__asm__("nop");
 	gpio_clear(USB_DISC_GPIO_Port, USB_DISC_Pin);
 
-	
+	uint8_t HiMsg[] = "0123456789987654321001234567899876543210\r\n";
 	while (1)
 	{
 		usbd_poll(usbd_dev);
+		//while (usbd_ep_write_packet(usbd_dev, 0x81, HiMsg, sizeof(HiMsg)) == 0);
 	}
 }
