@@ -18,6 +18,7 @@
  */
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/usb/usbd.h>
@@ -203,6 +204,8 @@ static enum usbd_request_return_codes cdcacm_control_request(usbd_device *usbd_d
 	return USBD_REQ_NOTSUPP;
 }
 
+unsigned int tick = 0;
+
 static void cdcacm_data_rx_cb(usbd_device *usbd_dev, uint8_t ep)
 {
 	(void)ep;
@@ -212,6 +215,7 @@ static void cdcacm_data_rx_cb(usbd_device *usbd_dev, uint8_t ep)
 	int len = usbd_ep_read_packet(usbd_dev, 0x01, buf, 64);
 
 	if (len) {
+		tick = 0;
 		usbd_ep_write_packet(usbd_dev, 0x82, buf, len);
 		buf[len] = 0;
 	}
@@ -282,10 +286,20 @@ int main(void)
 		__asm__("nop");
 	gpio_clear(USB_DISC_GPIO_Port, USB_DISC_Pin);
 
-	uint8_t HiMsg[] = "0123456789987654321001234567899876543210\r\n";
+	char HiMsg[] = "Hello world\r\n";
+	char buffer [50];
 	while (1)
 	{
+		tick++;
 		usbd_poll(usbd_dev);
-		//while (usbd_ep_write_packet(usbd_dev, 0x81, HiMsg, sizeof(HiMsg)) == 0);
+		//while (usbd_ep_write_packet(usbd_dev, 0x83, HiMsg, sizeof(HiMsg)) == 0);
+		if((tick %0x8000) == 0)
+		{
+			int n = sprintf (buffer, "Hello World %d\r\n", tick);
+			usbd_ep_write_packet(usbd_dev, 0x82, buffer, n);
+			//usbd_ep_write_packet(usbd_dev, 0x82, HiMsg, sizeof(HiMsg));
+		}
+		//for (i = 0; i < 0x800; i++)
+		//	__asm__("nop");
 	}
 }
